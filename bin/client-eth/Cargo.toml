@@ -63,6 +63,11 @@ ruint = { git = "https://github.com/axiom-crypto/uint", branch = "v1.12.3-openvm
 # revm-primitives = { path = "../../../revm/crates/primitives" }
 # revm-interpreter = { path = "../../../revm/crates/interpreter" }
 # revm-precompile = { path = "../../../revm/crates/precompile" }
+sha2 = { git = "https://github.com/sp1-patches/RustCrypto-hashes", package = "sha2", tag = "patch-sha2-0.10.8-sp1-4.0.0-rc.3" }
+ecdsa-core = { git = "https://github.com/sp1-patches/signatures", package = "ecdsa", tag = "patch-0.16.9-sp1-4.0.0-rc.3-v2" }
+tiny-keccak = { git = "https://github.com/sp1-patches/tiny-keccak", tag = "patch-2.0.2-sp1-4.0.0-rc.3" }
+bn = { git = "https://github.com/sp1-patches/bn", tag = "patch-0.6.0-sp1-4.0.0-rc.3-v1", package = "substrate-bn" }
+kzg-rs = { git = "https://github.com/succinctlabs/kzg-rs", branch = "n/v4" }
 
 [profile.release]
 panic = "abort"
