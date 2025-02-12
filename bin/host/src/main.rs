@@ -234,21 +234,19 @@ async fn main() -> eyre::Result<()> {
                     let app_vk = app_pk.get_app_vk();
                     sdk.verify_app_proof(&app_vk, &proof)?;
                 } else if args.prove_agg {
-                    let start_app = std::time::Instant::now();
-
                     let app_pk = sdk.app_keygen(app_config)?;
                     let app_committed_exe = sdk.commit_app_exe(app_pk.app_fri_params(), exe)?;
 
                     let app_prover = AppProver::new(app_pk.app_vm_pk.clone(), app_committed_exe)
                         .with_program_name(program_name);
-                    let proof = app_prover.generate_app_proof(stdin);
-                    let app_vk = app_pk.get_app_vk();
-                    sdk.verify_app_proof(&app_vk, &proof)?;
 
+                    let start_app = std::time::Instant::now();
+                    let proof = app_prover.generate_app_proof(stdin);
                     let app_time = start_app.elapsed().as_secs_f32();
                     println!("APP proof time: {}", app_time);
 
-                    let start_agg = std::time::Instant::now();
+                    let app_vk = app_pk.get_app_vk();
+                    sdk.verify_app_proof(&app_vk, &proof)?;
 
                     let mut agg_config = args.benchmark.agg_config();
                     agg_config.agg_stark_config.max_num_user_public_values =
@@ -258,8 +256,9 @@ async fn main() -> eyre::Result<()> {
                         AggStarkProvingKey::dummy_proof_and_keygen(agg_stark_config);
                     let agg_prover =
                         AggStarkProver::new(agg_stark_pk, app_pk.leaf_committed_exe.clone());
-                    let _agg_proof = agg_prover.generate_agg_proof(proof);
 
+                    let start_agg = std::time::Instant::now();
+                    let _agg_proof = agg_prover.generate_agg_proof(proof);
                     let agg_time = start_agg.elapsed().as_secs_f32();
                     println!("AGG proof time: {}", agg_time);
                 } else {
