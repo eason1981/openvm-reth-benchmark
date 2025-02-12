@@ -1,7 +1,6 @@
-use core::mem::transmute;
+use reth_primitives::Genesis;
+use rsp_client_executor::{io::ClientExecutorInput, ChainVariant, ClientExecutor};
 
-use openvm::io::{println, read, reveal};
-use openvm_client_executor::{io::ClientExecutorInput, ClientExecutor, EthereumVariant};
 #[allow(unused_imports, clippy::single_component_path_imports)]
 use {
     openvm_algebra_guest::IntMod,
@@ -26,22 +25,25 @@ openvm_algebra_complex_macros::complex_init! {
 }
 
 pub fn main() {
-    println("client-eth starting");
     setup_all_moduli();
     setup_all_curves();
     setup_all_complex_extensions();
 
     // Read the input.
-    let input: ClientExecutorInput = read();
-    println("finished reading input");
+    let input_vec: Vec<u8> = openvm::io::read_vec();
+    let input: ClientExecutorInput = bincode::deserialize(&input_vec).unwrap();
+
+    let variant = if let Some(genesis) = &input.genesis {
+        let genesis = serde_json::from_str::<Genesis>(genesis).unwrap();
+        ChainVariant::from_genesis(genesis)
+    } else {
+        ChainVariant::mainnet()
+    };
 
     // Execute the block.
     let executor = ClientExecutor;
-    let header = executor.execute::<EthereumVariant>(input).expect("failed to execute client");
+    let header = executor.execute(input, &variant).expect("failed to execute client");
     let block_hash = header.hash_slow();
 
-    // Commit the block hash.
-    let block_hash = unsafe { transmute::<_, [u32; 8]>(block_hash) };
-
-    block_hash.into_iter().enumerate().for_each(|(i, x)| reveal(x, i));
+    println!("block_hash: {:?}", block_hash);
 }
