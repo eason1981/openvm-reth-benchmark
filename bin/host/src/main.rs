@@ -45,6 +45,9 @@ use cli::ProviderArgs;
         .args(&["prove", "execute", "tracegen", "prove_e2e", "prove_agg"]),
 ))]
 struct HostArgs {
+    #[clap(long)]
+    fib_n: Option<u32>,
+
     /// The block number of the block to execute.
     #[clap(long)]
     block_number: u64,
@@ -184,7 +187,12 @@ async fn main() -> eyre::Result<()> {
     };
 
     let mut stdin = StdIn::default();
-    stdin.write(&client_input);
+    if let Some(n) = args.fib_n {
+        stdin.write(&n);
+    } else {
+        // reth
+        stdin.write(&client_input);
+    }
 
     let app_log_blowup = args.benchmark.app_log_blowup.unwrap_or(DEFAULT_APP_LOG_BLOWUP);
     let max_segment_length = args.benchmark.max_segment_length.unwrap_or((1 << 23) - 100);
