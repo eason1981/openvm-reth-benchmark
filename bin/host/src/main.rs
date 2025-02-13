@@ -188,6 +188,7 @@ async fn main() -> eyre::Result<()> {
 
     let mut stdin = StdIn::default();
     if let Some(n) = args.fib_n {
+        println!("Run Fibonacci: n = {n}");
         stdin.write(&n);
     } else {
         // reth

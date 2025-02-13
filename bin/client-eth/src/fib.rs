@@ -16,7 +16,7 @@ pub fn run() {
 
     // Read the input.
     let n: u32 = read();
-    println("finished reading input: n = {n}");
+    println("finished reading input");
 
     fibonacci(n);
 }

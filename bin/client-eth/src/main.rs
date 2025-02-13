@@ -1,8 +1,9 @@
 mod fib;
-// mod reth;
+mod reth;
+mod tendermint;
 
 pub fn main() {
-    fib::run();
-    // tendermint::run();
+    // fib::run();
+    tendermint::run();
     // reth::run();
 }
